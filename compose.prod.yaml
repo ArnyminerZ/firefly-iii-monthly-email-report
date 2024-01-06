@@ -1,7 +1,3 @@
 services:
   cronjob:
-    container_name: firefly-iii-monthly-email-report
-    build:
-      context: .
-    volumes:
-        - config.yaml:/app/config.yaml
+    image: arnyminerz/firefly-iii-monthly-email-report:development
