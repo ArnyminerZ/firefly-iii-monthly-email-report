@@ -6,7 +6,7 @@
 
 ARG PYTHON_VERSION=3.11.4
 # FROM ubuntu:20.04
-FROM python:${PYTHON_VERSION}-slim as base
+FROM python:${PYTHON_VERSION}-alpine as base
 
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -27,9 +27,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 # Copy the source code into the container.
 COPY . .
-
-# Install Cron
-RUN apt-get -y update && apt-get -y install cron
 
 # Run the application.
 CMD sh -c "echo \"0 12 1 * * /usr/bin/python3 /app/monthly-report.py\" | crontab - && crond -f -L /dev/stdout"
