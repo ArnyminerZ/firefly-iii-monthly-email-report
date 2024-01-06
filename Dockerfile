@@ -31,8 +31,5 @@ COPY . .
 # Install Cron
 RUN apt-get -y update && apt-get -y install cron
 
-# Write Cron job schedule
-RUN crontab -l | { cat; echo "0 12 1 * * /usr/bin/python3 /app/monthly-report.py"; } | crontab -
-
 # Run the application.
-CMD cron
+CMD sh -c "echo \"0 12 1 * * /usr/bin/python3 /app/monthly-report.py\" | crontab - && crond -f -L /dev/stdout"
