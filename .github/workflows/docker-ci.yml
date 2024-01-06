@@ -1,0 +1,45 @@
+name: Docker CI
+
+on:
+  push:
+    branches:
+      - 'main'
+
+permissions: write-all
+
+concurrency:
+  group: docker-ci
+
+jobs:
+  draft-release:
+    runs-on: ubuntu-latest
+    outputs:
+      updated_version: ${{ steps.update_package.outputs.updated_version }}
+    steps:
+      - name: 🖥️ Checkout
+        uses: actions/checkout@v4
+      # Drafts your next Release notes as Pull Requests are merged into "master"
+      - name: 🗒️ Draft release
+        uses: release-drafter/release-drafter@v5
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  docker:
+    runs-on: ubuntu-latest
+    name: 🐋 Docker CI
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to DockerHub
+        uses: docker/login-action@v3.0.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: arnyminerz/firefly-iii-monthly-email-report:development
+          platforms: linux/arm64,linux/arm/v7,linux/amd64
